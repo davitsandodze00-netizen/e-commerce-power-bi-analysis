@@ -1,0 +1,136 @@
+-- E-COMMERCE POWER BI ANALYSIS PROJECT
+
+-- 1. BASIC BUSINESS METRICS
+
+-- Measure 1: Total Revenue
+
+Total Revenue =
+SUM(Orders[Total_Amount])
+
+-- Measure 2: Total Orders
+
+Total Orders =
+COUNT(Orders[Order_ID])
+
+-- Measure 3: Total Customers
+
+Total Customers =
+DISTINCTCOUNT(Customers[Customer_ID])
+
+-- Measure 4: Average Order Value
+
+Average Order Value =
+DIVIDE(
+[Total Revenue],
+[Total Orders]
+)
+
+-- 2. SALES AND PROFIT ANALYSIS
+
+-- Measure 5: Total Sales
+
+Total Sales =
+SUMX(
+Order_Items,
+Order_Items[Quantity] * Order_Items[Unit_Price]
+)
+
+-- Measure 6: Total Cost
+
+Total Cost =
+SUMX(
+Order_Items,
+Order_Items[Quantity] * RELATED(Products[Cost])
+)
+
+-- Measure 7: Total Profit (Item Level)
+
+Total Profit (Item Level) =
+[Total Sales] - [Total Cost]
+
+-- Measure 8: Profit Margin % (Item Level)
+
+Profit Margin % (Item Level) =
+DIVIDE(
+[Total Profit (Item Level)],
+[Total Sales]
+)
+
+-- Measure 9: Total Profit (Orders)
+
+Total Profit (Orders) =
+[Total Revenue] - [Total Cost]
+
+-- Measure 10: Profit Margin % (Orders)
+
+Profit Margin % (Orders) =
+DIVIDE(
+[Total Profit (Orders)],
+[Total Revenue]
+)
+
+-- 3. PRODUCT ANALYSIS
+
+-- Measure 11: Total Quantity Sold
+
+Total Quantity Sold =
+SUM(Order_Items[Quantity])
+
+-- Measure 12: Average Unit Price
+
+Average Unit Price =
+AVERAGE(Order_Items[Unit_Price])
+
+-- Measure 13: Average Cost
+
+Average Cost =
+AVERAGE(Products[Cost])
+
+-- Measure 14: Total Products
+
+Total Products =
+DISTINCTCOUNT(Products[Product_ID])
+
+-- Measure 15: Category Color
+
+Category Color =
+SWITCH(
+SELECTEDVALUE(Products[Category]),
+"Laptop", "#2F5597",
+"Smartphone", "#ED7D31",
+"Tablet", "#70AD47",
+"Monitor", "#8064A2",
+"Smartwatch", "#FFC000",
+"Keyboard", "#C0504D",
+"Mouse", "#00A6A6",
+"#808080"
+)
+
+-- 4. CUSTOMER ANALYSIS
+
+-- Measure 16: Average Customer Age
+
+Average Customer Age =
+AVERAGE(Customers[Age])
+
+-- 5. SUPPLIER ANALYSIS
+
+-- Measure 17: Total Suppliers
+
+Total Suppliers =
+DISTINCTCOUNT(Suppliers[Supplier_ID])
+
+-- 6. INVENTORY ANALYSIS
+
+-- Measure 18: Products Below Reorder
+
+Products Below Reorder =
+COALESCE(
+    COUNTROWS(
+        FILTER(
+            Products,
+            Products[Stock_Quantity] <= Products[Reorder_Level]
+        )
+    ),
+    0
+)
